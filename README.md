@@ -2,7 +2,7 @@
 Team Members: Yale Fang, Eric Kim, Kyle Lee
 
 A web app for graphing, analyzing, and backtesting cryptocurrency pairs. 
-Hosted on Heroku at: https://pairs-trading-project.herokuapp.com/
+Intro & Demo: https://youtu.be/r-25HiB2-zA?si=Nj93JCkrmWpu3Rh5
 
 # How to Setup Project
 
