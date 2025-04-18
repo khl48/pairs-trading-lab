@@ -1,0 +1,350 @@
+body {
+  margin: 0;
+  padding-bottom: 50px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444;
+}
+/*
+ * Formatting the header area
+ */
+header {
+  background-color: #DFB887;
+  height: 35px;
+  width: 100%;
+  opacity: .9;
+  margin-bottom: 10px;
+}
+header h1.logo {
+  margin: 0;
+  font-size: 1.7em;
+  color: #fff;
+  text-transform: uppercase;
+  float: left;
+}
+header h1.logo:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+
+/*
+ * Centering the body content
+ */
+.container {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.custom-container {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+div.home {
+  padding: 30px 10px 30px 10px;
+  background-color: #E6E6FA;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 10px;
+}
+div.about {
+  padding: 10px 0 30px 0;
+  background-color: #E6E6FA;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+div.faq {
+  padding: 10px 0 30px 0;
+  background-color: #E6E6FA;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+h5 {
+  font-size: 1.7em;
+  font-weight: 100;
+  margin-top: 30px;
+  text-align: center;
+  letter-spacing: -1px;
+  color: #999;
+}
+.menu {
+  float: right;
+  margin-top: 8px;
+}
+.menu li {
+  display: inline;
+}
+.menu li + li {
+  margin-left: 35px;
+}
+.menu li a {
+  color: #444;
+  text-decoration: none;
+}
+
+
+/*Custom stuff*/
+
+
+select {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+button {
+  background-color: #DFB887;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  font-size: medium;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+h1 {
+  font-size: 2em;
+  margin-top: 20px;
+  text-align: left;
+  letter-spacing: -2px;
+}
+
+h2 {
+  font-size: 1.7em;
+  margin-top: 20px;
+  text-align: left;
+  letter-spacing: -2px;
+}
+
+h3 {
+  font-size: 1.3em;
+  margin-top: 20px;
+  text-align: left;
+  letter-spacing: -2px;
+  margin-bottom: 5px;
+}
+
+label {
+  font-size: .8em;
+  text-align: left;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+label[for=start_date], label[for=end_date] {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+
+/*padding: top right bottom left*/
+.box {
+  box-shadow: 0 3px 3px rgba(0,0,0,0.2);
+  width: 220px;
+  height: 300px;
+  text-align: left;
+  padding: 5px 10px 10px 10px;
+  border-style: solid;
+  border-width: 2px;
+  margin: 25px;
+  float: left;
+}
+
+.longbox {
+  box-shadow: 0 3px 3px rgba(0,0,0,0.2);
+  width: 220px;
+  height: 400px;
+  text-align: left;
+  padding: 5px 10px 10px 10px;
+  border-style: solid;
+  border-width: 2px;
+  margin-top: 10px;
+  float: left;
+}
+
+p {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: medium;
+  color: #444;
+  font-weight: 600;
+}
+
+
+.row {
+  display: grid;
+  margin-left: 0px;
+  width: 100%;
+}
+
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    color: #95a5a6;
+    font-family: "Helvetica", arial, sans-serif;
+    font-size: 18px;
+    border:1px solid #ecf0f1;
+    background:#ecf0f1;
+    padding:5px;
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
+input[type="number"]
+{
+    font-size: 1em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.chart-container {
+    width:900px !important;
+    height:450px !important;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(min-content, 1fr));
+  column-gap: 20px;
+  grid-template-columns: 1fr 2fr;
+}
+
+.custom-grid {
+    display: grid;
+    width: 80%;
+    gap: 10px;
+    grid-template-columns: 2fr 2fr 1fr;
+}
+
+.custom-grid-1 {
+    display: grid;
+    width: 80%;
+    gap: 10px;
+    grid-template-columns: 2fr 2fr 1fr 1fr;
+}
+
+.custom-grid-2 {
+    display: grid;
+    width: 60%;
+    gap: 10px;
+    grid-template-columns: 85px 180px 80px 180px 1fr;
+}
+
+.custom-grid-3 {
+    display: grid;
+    width: 80%;
+    gap: 10px;
+    grid-template-columns: 1.5fr 2fr 1.5fr 2fr 1.5fr 2fr;
+}
+
+.custom-grid-4 {
+    display: grid;
+    width: 80%;
+    gap: 10px;
+    grid-template-columns: 85px 130px 30px 85px 130px 30px 85px 130px 30px ;
+}
+
+.navigation-container {
+    display: grid;
+    width: 100%;
+    gap: 10px;
+    grid-template-columns: auto;
+}
+
+
+.chart-container {
+    width:900px !important;
+    height:450px !important;
+}
+
+.bt_table {
+    font-size: 11pt;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid silver;
+    table-layout: auto;
+    width: 100%;
+
+}
+
+.bt_table tr {
+    border: solid;
+    border-width: 1px 0;
+}
+
+.bt_table td, th {
+    padding: 5px;
+    text-align: center;
+    border-left: 1px solid #c3c3c3;
+    border-right: 1px solid #c3c3c3;
+}
+
+.bt_table tr:nth-child(even) {
+    background: #E0E0E0;
+}
+
+.bt_table tr:hover {
+    background: silver;
+    cursor: pointer;
+}
+
+.a_table {
+    font-size: 11pt;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid silver;
+    table-layout: auto;
+    width: 100%;
+
+}
+
+.a_table td, th {
+    padding: 5px;
+    text-align: center;
+    border-left: 1px solid #c3c3c3;
+    border-right: 1px solid #c3c3c3;
+}
+
+.a_table tr {
+    border: solid;
+    border-width: 1px 0;
+}
+
+.a_table tr:nth-child(even) {
+    background: #E0E0E0;
+}
+
+.a_table tr:hover {
+    background: silver;
+    cursor: pointer;
+}
+
+.a_table a {
+   display: block;
+   text-decoration: none;
+}
+
+.a_chart {
+    margin-top: 40px;
+}
+
+.slider {
+    width: 100%;
+}
+
+span {
+    font-size: .8em;
+    text-align: left;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-bottom: .5rem;
+}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Results</title>
+    {% endif %}
+    <!--Chart.js JS CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <body>
+    {% extends "layout.html" %}
+    {% block content %}
+
+    {% if title %}
+    <h1>{{ title }}</h1>
+    {% else %}
+    <h1>Results</h1>
+    {% endif %}
+
+    <form action="{{ url_for('handle_data') }}">
+        <div class="navigation-container">
+
+            <div class="custom-grid">
+                <!--
+                <select id="crypto_one" name="crypto_one" required>
+                    <option value="" disabled>Select currency 1</option>
+                    {% if crypto_one == 'btc' %}
+                    <option value="btc" selected>Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'eth' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth" selected>Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'ltc' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" selected>Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'bch' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch" selected>Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'xrp' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" >Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp" selected>Ripple</option>
+                    {% endif %}
+                </select>
+
+                <select id="crypto_two" name="crypto_two" required>
+                <option value="" disabled selected>Select currency 2</option>
+                    {% if crypto_two == 'btc' %}
+                    <option value="btc" selected>Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'eth' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth" selected>Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'ltc' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" selected>Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'bch' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch" selected>Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'xrp' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" >Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp" selected>Ripple</option>
+                    {% endif %}
+                </select>
+                -->
+
+                <select id="crypto_one" name="crypto_one" required>
+                    <option value="" disabled selected>Select currency 1</option>
+                    {% for coin in coins %}
+                        {% if crypto_one == coin %}
+                            <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                        {% else %}
+                            <option value="{{coin}}">{{coin.upper()}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <select id="crypto_two" name="crypto_two" required>
+                    <option value="" disabled selected>Select currency 2</option>
+                    {% for coin in coins %}
+                        {% if crypto_two == coin %}
+                            <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                        {% else %}
+                            <option value="{{coin}}">{{coin.upper()}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <select id="function" name="function" required>
+                    <option value="" disabled>Select function</option>
+                    <option value="Analyze" selected>Analyze</option>
+                    <option value="Backtest">Backtest</option>
+                    <option value="Graph">Graph</option>
+                </select>
+            </div>
+
+            <div class="custom-grid-2">
+                <label for="start_date">Start Period:</label>
+                <input type="date" id="start_date" name="start_date"
+                   value="{{ start_date }}"
+                   min="2018-01-01" max="{{now}}">
+
+                <label for="end_date">End Period:</label>
+                <input type="date" id="end_date" name="end_date"
+                    value="{{ end_date }}"
+                    min="2018-01-02" max="{{now}}">
+
+                <script>
+                    function validate(){
+                        var start = new Date(document.getElementById('start_date').value);
+                        var end = new Date(document.getElementById('end_date').value);
+                        if (start > end) {
+                            alert('End date must be after start date!');
+                            return false;
+                        }
+                        return true;
+                    }
+                </script>
+                {% with error = get_flashed_messages() %}
+                    {% if error %}
+                        <small style="color: red; grid-column: span 2;">{{ error[0] }}</small>
+                    {% endif %}
+                {% endwith %}
+
+            </div>
+        </div>
+    </form>
+
+    <div class="grid">
+        <div class="box">
+            <h2>Pair Analysis</h2>
+            <p>Correlation: {{ correlation }}</p>
+            <p>Cointegration: {{ cointegration }}</p>
+            <!--<p>Long CAGR: {{ cagr1 }}</p>
+            <p>Short CAGR: {{ cagr2 }}</p>-->
+        </div>
+
+        <div class="row">
+            <h3 style="text-align: center">All Pairs</h3>
+            <!--
+            {% for table in tables %}
+                {{ table|safe }}
+            {% endfor %}
+            -->
+
+            <table id="data" class="a_table">
+                <thead>
+                    <tr>
+                        <th>Coin1</th>
+                        <th>Coin2</th>
+                        <th onclick="sortTable(2);">Correlation</th>
+                        <th onclick="sortTable(3);">Cointegration P-Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in df_rows.iterrows() %}
+                        <tr onclick="window.location='{{ url_for('backtest', crypto_one=row['Coin1'], crypto_two=row['Coin2'], start_date=start_date, end_date=end_date) }}';">
+                            <td>{{ row['Coin1'] }}</td>
+                            <td>{{ row['Coin2'] }}</td>
+                            <td>{{ row['Correlation'] }}</td>
+                            <td>{{ row['Cointegration P-Value'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                function sortTable(n) {
+                    var table, rows, switching, i, x, y, shouldSwitch, dir = "asc", switchCount = 0;
+                    table = document.getElementById("data");
+                    switching = true;
+
+                    while (switching) {
+                        switching = false;
+                        rows = table.rows;
+                        for (i = 1; i < (rows.length - 1); i++) {
+                            shouldSwitch = false;
+                            x = rows[i].getElementsByTagName("TD")[n];
+                            y = rows[i + 1].getElementsByTagName("TD")[n];
+                            console.log(x);
+                            console.log(y);
+                            if (dir == "asc") {
+                                if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                            else if (dir == "desc") {
+                                if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (shouldSwitch) {
+                            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                            switching = true;
+                            switchCount++;
+                        }
+                        else {
+                            if (switchCount == 0 && dir == "asc") {
+                                dir = "desc";
+                                switching = true;
+                            }
+                        }
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="a_chart">
+        <canvas id="myChart3" ></canvas>
+
+        <script>
+        var ctx = document.getElementById('myChart3').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|tojson }},
+                datasets: [{
+                    data: {{ values1|tojson }},
+                    label: {{ crypto_one|tojson }},
+                    yAxisId: 'A',
+                    borderColor: "#3e95cd",
+                    fill: false,
+                }, {
+                    label: {{ crypto_two|tojson }},
+                    yAxisID: 'B',
+                    data: {{ values2|tojson }},
+                    borderColor: "#e8c3b9",
+                    fill: false,
+                }]
+            },
+            options: {
+                legend: { display: true },
+                title: {
+                display: true,
+                text: 'Price History of {{ crypto_one|tojson }} and {{ crypto_two|tojson }}'
+                },
+                interaction: {
+                  mode: 'index',
+                  intersect: false
+                },
+                scales: {
+                    A: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Price History of {{ crypto_one|tojson }} ($)'
+                        }
+                    },
+                    B: {
+                        type: 'linear',
+                        position: 'right',
+                        ticks: {
+                            max: 1,
+                            min: 0
+                        },
+                        grid: {
+                          drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        title: {
+                            display: true,
+                            text: 'Price History of {{ crypto_two|tojson }} ($)'
+                        }
+                    }
+                }
+            }
+        });
+        </script>
+    </div>
+
+
+    {% endblock %}
+
+    </body>
+</html>

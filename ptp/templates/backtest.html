@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Results</title>
+    {% endif %}
+    <!--Chart.js JS CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            font-size: .8em;
+            text-align: left;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #B0B0B0;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            top: 150%;
+            left: 50%;
+            margin-left: -150px;
+            padding: 3px;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #B0B0B0 transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+    </style>
+
+    <body>
+        {% extends "layout.html" %}
+        {% block content %}
+
+        {% if title %}
+        <h1>{{ title }}</h1>
+        {% else %}
+        <h1>Results</h1>
+        {% endif %}
+
+        <form action="{{ url_for('handle_backtest_data') }}" method="POST">
+            <div class="navigation-container">
+
+                <div class="custom-grid-1">
+
+                    <select id="crypto_one" name="crypto_one" required>
+                        <option value="" disabled selected>Select currency 1</option>
+                        {% for coin in coins %}
+                            {% if crypto_one == coin %}
+                                <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                            {% else %}
+                                <option value="{{coin}}">{{coin.upper()}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+                    <select id="crypto_two" name="crypto_two" required>
+                        <option value="" disabled selected>Select currency 2</option>
+                        {% for coin in coins %}
+                            {% if crypto_two == coin %}
+                                <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                            {% else %}
+                                <option value="{{coin}}">{{coin.upper()}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+                    <select id="function" name="function" required>
+                        <option value="" disabled>Select function</option>
+                        <option value="Analyze">Analyze</option>
+                        <option value="Backtest" selected>Backtest</option>
+                        <option value="Graph">Graph</option>
+                    </select>
+
+                    <input type="number" id="starting_equity" name="starting_equity" min="1000" max="500000" value="{{bt_params[6]}}" placeholder="Starting equity" required>
+                </div>
+
+                <!--
+                Moving average period
+                standard deviation period
+                Maximum trading duration
+                Entry threshold
+                Exit threshold
+                Stop/Loss threshold
+                -->
+                <div class="custom-grid-3">
+                    <div class="tooltip">Moving Average Period:<span class="tooltiptext">Range: 10-100 (days)</span></div>
+                    <input type="number" id="ma_period" name="ma_period" value="{{bt_params[0]}}" min="10" max="100">
+
+                    <div class="tooltip">Standard Deviation Period:<span class="tooltiptext">Range: 10-100 (days)</span></div>
+                    <input type="number" id="std_period" name="std_period" value="{{bt_params[1]}}" min="10" max="100">
+
+                    <div class="tooltip">Maximum Trading Duration:<span class="tooltiptext">Close position after period passes; Range: 0-100 (days); If 0, no maximum trading duration</span></div>
+                    <input type="number" id="max_dur" name="max_dur" value="{{bt_params[2]}}" min="0" max="100">
+
+
+                </div>
+
+                <div class="custom-grid-4">
+                    <label for="entry_threshold">Entry Threshold:</label>
+                    <input type="range" step="0.1" min="0.2" max="3" value="{{bt_params[3]}}" class="slider" id="entry_threshold" name="entry_threshold">
+                    <span id="entry_out"></span>
+
+
+                    <label for="exit_threshold">Exit Threshold:</label>
+                    <input type="range" step="0.1" min="0.1" max="2" value="{{bt_params[4]}}" class="slider" id="exit_threshold" name="exit_threshold">
+                    <span id="exit_out"></span>
+
+                    <label for="sl_threshold">Stop/Loss Threshold:</label>
+                    <input type="range" step="0.1" min="0" max="1" value="{{bt_params[5]}}" class="slider" id="sl_threshold" name="sl_threshold">
+                    <span id="sl_out"></span>
+
+                    <script>
+                        var slider = document.getElementById("entry_threshold");
+                        var output = document.getElementById("entry_out");
+                        output.innerHTML = slider.value;
+
+                        slider.oninput = function() {
+                        output.innerHTML = this.value;
+                        }
+
+                        var slider2 = document.getElementById("exit_threshold");
+                        var output2 = document.getElementById("exit_out");
+                        output2.innerHTML = slider2.value;
+
+                        slider2.oninput = function() {
+                        output2.innerHTML = this.value;
+                        }
+
+                        var slider3 = document.getElementById("sl_threshold");
+                        var output3 = document.getElementById("sl_out");
+                        output3.innerHTML = slider3.value;
+
+                        slider3.oninput = function() {
+                        output3.innerHTML = this.value;
+                        }
+                    </script>
+                </div>
+
+
+                <div class="custom-grid-2">
+                    <label for="start_date">Start Period:</label>
+                    <input type="date" id="start_date" name="start_date"
+                       value="{{ start_date }}"
+                       min="2018-01-01" max="{{now}}">
+
+                    <label for="end_date">End Period:</label>
+                    <input type="date" id="end_date" name="end_date"
+                        value="{{ end_date }}"
+                        min="2018-01-02" max="{{now}}">
+
+                    <button onclick="return validate();">Submit</button>
+
+                    <script>
+                        function validate(){
+                            var start = new Date(document.getElementById('start_date').value);
+                            var end = new Date(document.getElementById('end_date').value);
+                            var entry = parseInt(document.getElementById('entry_threshold').value);
+                            var exit = parseInt(document.getElementById('exit_threshold').value);
+                            if (exit > entry){
+                                alert('Entry threshold must be greater than exit threshold ');
+                                return false;
+                            }
+                            if (start > end) {
+                                alert('End date must be after start date!');
+                                return false;
+                            }
+                            return true;
+                        }
+                    </script>
+
+                </div>
+            </div>
+        </form>
+
+        <div class="grid">
+            <div class="longbox">
+                <h2>{{crypto_one}} and {{crypto_two}} Pairs Backtest</h2>
+                <p>Initial Capital: {{values['initial']}}</p>
+                <p>Total net P/L: {{values['total_pl']}}</p>
+                <p>CAGR: {{values['cagr']}}</p>
+                <p>Start Date: {{ start_date }}</p>
+                <p>End Date: {{ end_date }}</p>
+                <p>Total Transactions: {{values['trades']}}</p>
+                <p>Final Equity: {{values['final']}}</p>
+                <p>Total ROI: {{values['roi']}}</p>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="backtestPriceHistoryChart" ></canvas>
+
+                <script>
+                var ctx = document.getElementById('backtestPriceHistoryChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ labels|tojson }},
+                        datasets: [{
+                            data: {{ values1|tojson }},
+                            label: {{ crypto_one|tojson }},
+                            yAxisId: 'A',
+                            borderColor: "#3e95cd",
+                            fill: false,
+                        }, {
+                            label: {{ crypto_two|tojson }},
+                            yAxisID: 'B',
+                            data: {{ values2|tojson }},
+                            borderColor: "#e8c3b9",
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        legend: { display: true },
+                        responsive:true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                          mode: 'index',
+                          intersect: false
+                        },
+                        plugins: {
+                          title: {
+                            display: true,
+                            text: 'Price History of {{ crypto_one|tojson }} and {{ crypto_two|tojson }}',
+                          }
+                        },
+                        scales: {
+                            A: {
+                                type: 'linear',
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Price History of {{ crypto_one|tojson }} ($)'
+                                }
+                            },
+                            B: {
+                                type: 'linear',
+                                position: 'right',
+                                ticks: {
+                                    max: 1,
+                                    min: 0
+                                },
+                                grid: {
+                                  drawOnChartArea: false, // only want the grid lines for one axis to show up
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Price History of {{ crypto_two|tojson }} ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+                </script>
+            </div>
+
+        </div>
+
+        <br>
+
+        <canvas id="myChart1" ></canvas>
+
+        <script>
+            var ctx = document.getElementById('myChart1').getContext('2d');
+            var myChart1 = new Chart(ctx, {
+                type: 'line',
+                data: {
+                labels: {{ labels|tojson }},
+                datasets: [
+                    {
+                    data: {{ equity|tojson }},
+                    label: 'Equity',
+                    borderColor: "#3e95cd",
+                    fill: false,
+                    }]
+                },
+                options: {
+                    legend: { display: true },
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: 'Equity Chart',
+                      }
+                    },
+                    interaction: {
+                      mode: 'index',
+                      intersect: false
+                    },
+                    title: {
+                    display: true,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            grace: '20%'
+                        }
+                    }
+                    }
+            });
+        </script>
+
+        <br>
+
+        <div class="row">
+            <table id="data" class="bt_table">
+                <thead>
+                    <tr>
+                        <!-- Name, Operation, Entry Time, Exit Time, Size, Entry Price, Exit Price, PnL, Z-Score -->
+                        <th>Trades</th>
+                        <th>Name</th>
+                        <th>Operation</th>
+                        <th>Date</th>
+                        <th>Size</th>
+                        <th>Entry Price</th>
+                        <th>Exit Price</th>
+                        <th>PnL</th>
+                        <th>Z-Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in df_rows.iterrows() %}
+                        <tr>
+                            <td>{{ row['Index'] }}</td>
+                            <td>{{ row['Name'] }}</td>
+                            <td>{{ row['Operation'] }}</td>
+                            <td>{{ row['Date'] }}</td>
+                            <td>{{ row['Size'] }}</td>
+                            <td>{{ row['Entry Price'] }}</td>
+                            <td>{{ row['Exit Price'] }}</td>
+                            <td>{{ row['PnL'] }}</td>
+                            <td>{{ row['Z-Score'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    {% endblock %}
+
+    </body>
+</html>

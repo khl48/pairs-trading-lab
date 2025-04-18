@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Results</title>
+    {% endif %}
+    <!--Chart.js JS CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <body>
+    {% extends "layout.html" %}
+    {% block content %}
+
+    {% if title %}
+    <h1>{{ title }}</h1>
+    {% else %}
+    <h1>Results</h1>
+    {% endif %}
+
+    <form action="{{ url_for('handle_data') }}">
+        <div class="navigation-container">
+            <div class="custom-grid">
+                <!--
+                <select id="crypto_one" name="crypto_one" required>
+                    <option value="" disabled>Select currency 1</option>
+                    {% if crypto_one == 'btc' %}
+                    <option value="btc" selected>Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'eth' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth" selected>Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'ltc' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" selected>Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'bch' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch" selected>Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_one == 'xrp' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" >Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp" selected>Ripple</option>
+                    {% endif %}
+                </select>
+
+                <select id="crypto_two" name="crypto_two" required>
+                <option value="" disabled selected>Select currency 2</option>
+                    {% if crypto_two == 'btc' %}
+                    <option value="btc" selected>Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'eth' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth" selected>Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'ltc' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" selected>Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'bch' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc">Litecoin</option>
+                    <option value="bch" selected>Bitcoin Cash</option>
+                    <option value="xrp">Ripple</option>
+                    {% elif crypto_two == 'xrp' %}
+                    <option value="btc">Bitcoin</option>
+                    <option value="eth">Ethereum</option>
+                    <option value="ltc" >Litecoin</option>
+                    <option value="bch">Bitcoin Cash</option>
+                    <option value="xrp" selected>Ripple</option>
+                    {% endif %}
+                </select>
+                -->
+                <select id="crypto_one" name="crypto_one" required>
+                    <option value="" disabled selected>Select currency 1</option>
+                    {% for coin in coins %}
+                        {% if crypto_one == coin %}
+                            <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                        {% else %}
+                            <option value="{{coin}}">{{coin.upper()}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <select id="crypto_two" name="crypto_two" required>
+                    <option value="" disabled selected>Select currency 2</option>
+                    {% for coin in coins %}
+                        {% if crypto_two == coin %}
+                            <option value="{{coin}}" selected>{{coin.upper()}}</option>
+                        {% else %}
+                            <option value="{{coin}}">{{coin.upper()}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <select id="function" name="function" required>
+                    <option value="" disabled>Select function</option>
+                    <option value="Analyze">Analyze</option>
+                    <option value="Backtest" selected>Backtest</option>
+                    <option value="Graph">Graph</option>
+                </select>
+            </div>
+
+            <div class="custom-grid-2">
+                <label for="start_date">Start Period:</label>
+                <input type="date" id="start_date" name="start_date"
+                   value="{{ start_date }}"
+                   min="2018-01-01" max="{{now}}">
+
+                <label for="end_date">End Period:</label>
+                <input type="date" id="end_date" name="end_date"
+                    value="{{ end_date }}"
+                    min="2018-01-02" max="{{now}}">
+
+                <button onclick="return validate();">Submit</button>
+
+                <script>
+                    function validate(){
+                        var start = new Date(document.getElementById('start_date').value);
+                        var end = new Date(document.getElementById('end_date').value);
+                        if (start > end) {
+                            alert('End date must be after start date!');
+                            return false;
+                        }
+                        return true;
+                    }
+                </script>
+            </div>
+
+        </div>
+    </form>
+
+    <canvas id="myChart1" ></canvas>
+
+    <script>
+    console.log({{ values1|tojson }});
+    var ctx = document.getElementById('myChart1').getContext('2d');
+    var myChart1 = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|tojson }},
+            datasets: [
+                {
+                data: {{ values1|tojson }},
+                label: {{ crypto_one|tojson }},
+                borderColor: "#3e95cd",
+                fill: false,
+            }]
+        },
+        options: {
+            legend: { display: true },
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            title: {
+            display: true,
+            text: 'Price History of {{ crypto_one|tojson }}'
+            }}
+    });
+    console.log({{ values1|tojson }});
+    myChart1.update();
+    </script>
+
+    <canvas id="myChart2" ></canvas>
+
+    <script>
+    var ctx = document.getElementById('myChart2').getContext('2d');
+    var myChart2 = new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: {{ labels|tojson }},
+        datasets: [
+            {
+            data: {{ values2|tojson }},
+            label: {{ crypto_two|tojson }},
+            borderColor: "#e8c3b9",
+            fill: false,
+            }]
+        },
+        options: {
+            legend: { display: true },
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            title: {
+            display: true,
+            text: 'Price History of {{ crypto_two|tojson }}'
+            }}
+    });
+
+    myChart2.update();
+    </script>
+
+    <canvas id="myChart3" ></canvas>
+
+    <script>
+    var ctx = document.getElementById('myChart3').getContext('2d');
+    var myChart3 = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|tojson }},
+            datasets: [{
+                data: {{ values1|tojson }},
+                label: {{ crypto_one|tojson }},
+                yAxisId: 'A',
+                borderColor: "#3e95cd",
+                fill: false,
+            }, {
+                label: {{ crypto_two|tojson }},
+                yAxisID: 'B',
+                data: {{ values2|tojson }},
+                borderColor: "#e8c3b9",
+                fill: false,
+            }]
+        },
+        options: {
+            legend: { display: true },
+            title: {
+            display: true,
+            text: 'Price History of {{ crypto_one|tojson }} and {{ crypto_two|tojson }}'
+            },
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            scales: {
+                A: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Price History of {{ crypto_one|tojson }} ($)'
+                    }
+                },
+                B: {
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        max: 1,
+                        min: 0
+                    },
+                    grid: {
+                      drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    },
+                    title: {
+                        display: true,
+                        text: 'Price History of {{ crypto_two|tojson }} ($)'
+                    }
+                }
+            }
+        }
+    });
+
+    myChart3.update();
+    </script>
+
+
+    {% endblock %}
+
+    </body>
+</html>
